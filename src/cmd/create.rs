@@ -17,6 +17,7 @@ use std::{
 pub enum Cmd {
     Basic(Basic),
     Sharded(Sharded),
+    Idiot(Idiot)
 }
 
 #[derive(Debug, StructOpt)]
@@ -75,11 +76,36 @@ pub struct Sharded {
     key_type: KeyType,
 }
 
+#[derive(Debug, StructOpt)]
+/// Create a new basic wallet
+pub struct Idiot {
+    #[structopt(short, long, default_value = "wallet.key")]
+    /// Output file to store the key in
+    output: PathBuf,
+
+    #[structopt(long)]
+    /// Overwrite an existing file
+    force: bool,
+
+    #[structopt(long)]
+    /// Use space separated seed words to create the wallet
+    seed: bool,
+
+    #[structopt(long, default_value = NETTYPE_MAIN_STR)]
+    /// The network to generate the wallet (testnet/mainnet)
+    network: Network,
+
+    #[structopt(long, default_value = KEYTYPE_ED25519_STR)]
+    /// The type of key to generate (ecc_compact/ed25519(.
+    key_type: KeyType,
+}
+
 impl Cmd {
     pub async fn run(&self, opts: Opts) -> Result {
         match self {
             Cmd::Basic(cmd) => cmd.run(opts).await,
             Cmd::Sharded(cmd) => cmd.run(opts).await,
+            Cmd::Idiot(cmd) => cmd.run(opts).await,
         }
     }
 }
@@ -98,6 +124,28 @@ impl Basic {
         let keypair = gen_keypair(tag, seed_words, self.seed.as_ref())?;
         let format = format::Basic {
             pwhash: PwHash::argon2id13_default(),
+        };
+        let wallet = Wallet::encrypt(&keypair, password.as_bytes(), Format::Basic(format))?;
+        let mut writer = open_output_file(&self.output, !self.force)?;
+        wallet.write(&mut writer)?;
+        verify::print_result(&wallet, true, opts.format)
+    }
+}
+
+impl Idiot {
+    pub async fn run(&self, opts: Opts) -> Result {
+        let seed_words = match &self.seed {
+            Some(seed_type) => Some(get_seed_words(seed_type)?),
+            None => None,
+        };
+        let password = get_password(true)?;
+        let tag = KeyTag {
+            network: self.network,
+            key_type: self.key_type,
+        };
+        let keypair = gen_keypair(tag, seed_words, self.seed.as_ref())?;
+        let format = format::Basic {
+            pwhash: PwHash::hex_default(),
         };
         let wallet = Wallet::encrypt(&keypair, password.as_bytes(), Format::Basic(format))?;
         let mut writer = open_output_file(&self.output, !self.force)?;

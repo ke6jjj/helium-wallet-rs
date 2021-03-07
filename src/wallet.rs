@@ -25,6 +25,7 @@ const WALLET_KIND_SHARDED_V2: u16 = 0x0102;
 
 const PWHASH_KIND_PBKDF2: u8 = 0;
 const PWHASH_KIND_ARGON2ID13: u8 = 1;
+const PWHASH_KIND_HEX: u8 = 0xff;
 
 pub struct Wallet {
     pub public_key: PublicKey,
@@ -137,6 +138,7 @@ impl Wallet {
         match kind {
             PWHASH_KIND_PBKDF2 => Ok(PwHash::pbkdf2_default()),
             PWHASH_KIND_ARGON2ID13 => Ok(PwHash::argon2id13_default()),
+            PWHASH_KIND_HEX => Ok(PwHash::hex_default()),
             _ => Err(anyhow!("Invalid pwhash kind {}", kind)),
         }
     }
@@ -173,6 +175,7 @@ impl Wallet {
         match pwhash {
             PwHash::Pbkdf2(_) => writer.write_u8(PWHASH_KIND_PBKDF2)?,
             PwHash::Argon2id13(_) => writer.write_u8(PWHASH_KIND_ARGON2ID13)?,
+            PwHash::Hex(_) => writer.write_u8(PWHASH_KIND_HEX)?,
         }
         Ok(())
     }
