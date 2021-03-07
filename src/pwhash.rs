@@ -3,12 +3,13 @@ use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
 use hmac::Hmac;
 use sha2::Sha256;
 use sodiumoxide::{crypto::pwhash::argon2id13, randombytes};
-use std::{convert::TryInto, fmt, io};
+use std::{convert::TryInto, fmt, io, str};
 
 #[derive(Clone, Copy, Debug)]
 pub enum PwHash {
     Pbkdf2(Pbkdf2),
     Argon2id13(Argon2id13),
+    Hex(Hex),
 }
 
 impl PwHash {
@@ -16,6 +17,7 @@ impl PwHash {
         match self {
             PwHash::Pbkdf2(hasher) => hasher.pwhash(password, hash),
             PwHash::Argon2id13(hasher) => hasher.pwhash(password, hash),
+            PwHash::Hex(hasher) => hasher.pwhash(password, hash),
         }
     }
 
@@ -23,6 +25,7 @@ impl PwHash {
         match self {
             PwHash::Pbkdf2(hasher) => hasher.read(reader),
             PwHash::Argon2id13(hasher) => hasher.read(reader),
+            PwHash::Hex(hasher) => hasher.read(reader),
         }
     }
 
@@ -30,6 +33,7 @@ impl PwHash {
         match self {
             PwHash::Pbkdf2(hasher) => hasher.write(writer),
             PwHash::Argon2id13(hasher) => hasher.write(writer),
+            PwHash::Hex(hasher) => hasher.write(writer),
         }
     }
 
@@ -44,6 +48,10 @@ impl PwHash {
     pub fn argon2id13_default() -> Self {
         PwHash::Argon2id13(Argon2id13::default())
     }
+
+    pub fn hex_default() -> Self {
+        PwHash::Hex(Hex::default())
+    }
 }
 
 impl fmt::Display for PwHash {
@@ -51,6 +59,7 @@ impl fmt::Display for PwHash {
         match self {
             PwHash::Pbkdf2(_) => f.write_str("Pbkdf2"),
             PwHash::Argon2id13(_) => f.write_str("Argon2id13"),
+            PwHash::Hex(_) => f.write_str("Hex"),
         }
     }
 }
@@ -131,6 +140,37 @@ impl Argon2id13 {
         writer.write_all(&self.salt.0)?;
         writer.write_u32::<LittleEndian>(self.mem_limit.0.try_into()?)?;
         writer.write_u32::<LittleEndian>(self.ops_limit.0.try_into()?)?;
+        Ok(())
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct Hex {
+}
+
+impl Default for Hex {
+    fn default() -> Self {
+        Self {}
+    }
+}
+
+impl Hex {
+    pub fn pwhash(&self, password: &[u8], hash: &mut [u8]) -> Result {
+        let password_utf8 = str::from_utf8(password)?;
+        println!("utf8 ok: {}", password_utf8);
+        hex::decode_to_slice(password_utf8, hash)?;
+        println!("hex decode ok");
+        println!("hex decode len {}", hash.len());
+        assert_eq!(hash.len(), 32);
+        println!("hash len correct");
+        Ok(())
+    }
+
+    pub fn read(&mut self, _reader: &mut dyn io::Read) -> Result {
+        Ok(())
+    }
+
+    pub fn write(&self, _writer: &mut dyn io::Write) -> Result {
         Ok(())
     }
 }
