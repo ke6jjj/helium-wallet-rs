@@ -742,7 +742,7 @@ dependencies = [
 [[package]]
 name = "helium-proto"
 version = "0.1.0"
-source = "git+https://github.com/helium/proto?branch=master#2c1f62e4bf8013779fdf41da9cae46efdd323a64"
+source = "git+https://github.com/helium/proto#2c1f62e4bf8013779fdf41da9cae46efdd323a64"
 dependencies = [
  "bytes",
  "prost",
@@ -754,7 +754,7 @@ dependencies = [
 
 [[package]]
 name = "helium-wallet"
-version = "1.4.0"
+version = "1.4.1-dev"
 dependencies = [
  "aes-gcm",
  "anyhow",
