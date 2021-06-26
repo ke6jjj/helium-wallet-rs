@@ -19,6 +19,7 @@ pub mod balance;
 pub mod burn;
 pub mod commit;
 pub mod create;
+pub mod copy;
 pub mod hotspots;
 pub mod htlc;
 pub mod info;
@@ -92,14 +93,23 @@ fn load_wallet(files: Vec<PathBuf>) -> Result<Wallet> {
 }
 
 fn get_password(confirm: bool) -> std::io::Result<String> {
-    match env::var("HELIUM_WALLET_PASSWORD") {
+    get_password_ex(confirm, 0, "Password")
+}
+
+fn get_password_ex(confirm: bool, number: u8, prompt: &str) -> std::io::Result<String> {
+    let input_env_var = match number {
+        0 => "HELIUM_WALLET_PASSWORD".to_string(),
+        _ => format!("HELIUM_WALLET_PASSWORD_{}", number)
+    };
+    match env::var(input_env_var) {
         Ok(str) => Ok(str),
         _ => {
             use dialoguer::Password;
             let mut builder = Password::new();
-            builder.with_prompt("Password");
+            builder.with_prompt(prompt);
             if confirm {
-                builder.with_confirmation("Confirm password", "Passwords do not match");
+                let confirm_prompt = format!("Confirm {}", prompt);
+                builder.with_confirmation(confirm_prompt, "Passwords do not match");
             };
             builder.interact()
         }
