@@ -36,7 +36,7 @@ pub enum Cmd {
     Vars(vars::Cmd),
     Validators(validators::Cmd),
     Commit(commit::Cmd),
-    Copy(copy::Cmd)
+    Copy(copy::Cmd),
 }
 
 #[tokio::main]

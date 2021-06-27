@@ -100,6 +100,30 @@ pub struct Idiot {
     key_type: KeyType,
 }
 
+#[derive(Debug, StructOpt)]
+/// Create a new basic wallet
+pub struct Idiot {
+    #[structopt(short, long, default_value = "wallet.key")]
+    /// Output file to store the key in
+    output: PathBuf,
+
+    #[structopt(long)]
+    /// Overwrite an existing file
+    force: bool,
+
+    #[structopt(long)]
+    /// Use space separated seed words to create the wallet
+    seed: bool,
+
+    #[structopt(long, default_value = NETTYPE_MAIN_STR)]
+    /// The network to generate the wallet (testnet/mainnet)
+    network: Network,
+
+    #[structopt(long, default_value = KEYTYPE_ED25519_STR)]
+    /// The type of key to generate (ecc_compact/ed25519(.
+    key_type: KeyType,
+}
+
 impl Cmd {
     pub async fn run(&self, opts: Opts) -> Result {
         match self {
