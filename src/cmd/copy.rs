@@ -63,17 +63,17 @@ pub struct Idiot {
 }
 
 impl Cmd {
-    pub fn run(&self, opts: Opts) -> Result {
+    pub async fn run(&self, opts: Opts) -> Result {
         match self {
-            Cmd::Basic(cmd) => cmd.run(opts),
-            Cmd::Sharded(cmd) => cmd.run(opts),
-            Cmd::Idiot(cmd) => cmd.run(opts),
+            Cmd::Basic(cmd) => cmd.run(opts).await,
+            Cmd::Sharded(cmd) => cmd.run(opts).await,
+            Cmd::Idiot(cmd) => cmd.run(opts).await,
         }
     }
 }
 
 impl Basic {
-    pub fn run(&self, opts: Opts) -> Result {
+    pub async fn run(&self, opts: Opts) -> Result {
         let password = get_password_ex(false, 0, "Source wallet password")?;
         let wallet = load_wallet(opts.files)?;
         let keypair = wallet.decrypt(password.as_bytes())?;
@@ -90,7 +90,7 @@ impl Basic {
 }
 
 impl Sharded {
-    pub fn run(&self, opts: Opts) -> Result {
+    pub async fn run(&self, opts: Opts) -> Result {
         let password = get_password_ex(false, 0, "Source wallet password")?;
         let wallet = load_wallet(opts.files)?;
         let keypair = wallet.decrypt(password.as_bytes())?;
@@ -117,7 +117,7 @@ impl Sharded {
 }
 
 impl Idiot {
-    pub fn run(&self, opts: Opts) -> Result {
+    pub async fn run(&self, opts: Opts) -> Result {
         let password = get_password_ex(false, 0, "Source wallet password")?;
         let wallet = load_wallet(opts.files)?;
         let keypair = wallet.decrypt(password.as_bytes())?;
