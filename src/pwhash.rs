@@ -157,12 +157,8 @@ impl Default for Hex {
 impl Hex {
     pub fn pwhash(&self, password: &[u8], hash: &mut [u8]) -> Result {
         let password_utf8 = str::from_utf8(password)?;
-        println!("utf8 ok: {}", password_utf8);
         hex::decode_to_slice(password_utf8, hash)?;
-        println!("hex decode ok");
-        println!("hex decode len {}", hash.len());
         assert_eq!(hash.len(), 32);
-        println!("hash len correct");
         Ok(())
     }
 
