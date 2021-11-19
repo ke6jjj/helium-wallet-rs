@@ -1,4 +1,5 @@
 use crate::{
+    cmd::USER_AGENT,
     keypair::PublicKey,
     result::{anyhow, Result},
     traits::B64,
@@ -39,6 +40,7 @@ impl Client {
     pub fn new_with_timeout(base_url: String, timeout: u64) -> Self {
         let client = reqwest::Client::builder()
             .gzip(true)
+            .user_agent(USER_AGENT)
             .timeout(Duration::from_secs(timeout))
             .build()
             .unwrap();
@@ -47,7 +49,7 @@ impl Client {
 
     /// Fetch the public maker key for a given onboarding key
     pub async fn address_for(&self, gateway: &PublicKey) -> Result<PublicKey> {
-        let request_url = format!("{}/hotspots/{}", self.base_url, gateway.to_string());
+        let request_url = format!("{}/hotspots/{}", self.base_url, gateway);
         let response: serde_json::Value = self
             .client
             .get(&request_url)
@@ -56,7 +58,7 @@ impl Client {
             .error_for_status()?
             .json()
             .await?;
-        response["data"]["publicAddress"]
+        response["data"]["maker"]["address"]
             .as_str()
             .map_or(Err(anyhow!("Invalid staking address from server")), |v| {
                 v.parse().map_err(|e: helium_crypto::Error| e.into())

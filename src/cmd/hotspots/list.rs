@@ -23,7 +23,7 @@ impl Cmd {
                 .map(|key| key.network)
                 .ok_or_else(|| anyhow!("at least one address expected"))?,
         );
-        let client = Client::new_with_base_url(api_url);
+        let client = new_client(api_url);
         let mut results: Vec<(PublicKey, Result<Vec<Hotspot>>)> =
             Vec::with_capacity(self.addresses.len());
         for address in addresses {
@@ -56,7 +56,7 @@ fn print_results(results: Vec<(PublicKey, Result<Vec<Hotspot>>)>, format: Output
                             table.add_row(row![
                                 hotspot.address,
                                 hotspot.name.unwrap_or_else(|| "unknown".to_string()),
-                                hotspot.location.unwrap_or_else(|| "uknnown".to_string()),
+                                hotspot.location.unwrap_or_else(|| "unknown".to_string()),
                                 hotspot
                                     .geocode
                                     .short_city
@@ -84,7 +84,7 @@ fn print_results(results: Vec<(PublicKey, Result<Vec<Hotspot>>)>, format: Output
                         table_hotspots.push(json!({
                             "address": hotspot.address,
                             "name":  hotspot.name.unwrap_or_else(|| "unknown".to_string()),
-                            "location": hotspot.location.unwrap_or_else(|| "uknnown".to_string()),
+                            "location": hotspot.location.unwrap_or_else(|| "unknown".to_string()),
                             "city":
                                 hotspot
                                     .geocode

@@ -1,37 +1,8 @@
 use super::TxnEnvelope;
-use crate::result::{bail, Error, Result};
+use crate::result::Result;
+use helium_api::models::HotspotStakingMode;
 use helium_proto::*;
 use serde_derive::{Deserialize, Serialize};
-use std::{fmt, str::FromStr};
-
-#[derive(Debug)]
-pub enum StakingMode {
-    DataOnly,
-    Light,
-    Full,
-}
-
-impl fmt::Display for StakingMode {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            StakingMode::DataOnly => f.write_str("dataonly"),
-            StakingMode::Full => f.write_str("full"),
-            StakingMode::Light => f.write_str("light"),
-        }
-    }
-}
-
-impl FromStr for StakingMode {
-    type Err = Error;
-    fn from_str(v: &str) -> Result<Self> {
-        match v.to_lowercase().as_ref() {
-            "light" => Ok(Self::Light),
-            "full" => Ok(Self::Full),
-            "dataonly" => Ok(Self::DataOnly),
-            _ => bail!("invalid staking mode {}", v),
-        }
-    }
-}
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct TxnFeeConfig {
@@ -125,7 +96,8 @@ pub trait TxnStakingFee {
 }
 
 pub trait TxnModeStakingFee {
-    fn txn_mode_staking_fee(&self, mode: &StakingMode, config: &TxnFeeConfig) -> Result<u64>;
+    fn txn_mode_staking_fee(&self, mode: &HotspotStakingMode, config: &TxnFeeConfig)
+        -> Result<u64>;
 }
 
 fn calculate_txn_fee(payload_size: usize, config: &TxnFeeConfig) -> u64 {
@@ -181,24 +153,46 @@ macro_rules! impl_txn_staking_fee {
 }
 
 impl TxnModeStakingFee for BlockchainTxnAddGatewayV1 {
-    fn txn_mode_staking_fee(&self, mode: &StakingMode, config: &TxnFeeConfig) -> Result<u64> {
+    fn txn_mode_staking_fee(
+        &self,
+        mode: &HotspotStakingMode,
+        config: &TxnFeeConfig,
+    ) -> Result<u64> {
         let result = match mode {
-            StakingMode::Full => config.staking_fee_txn_add_gateway_v1,
-            StakingMode::DataOnly => config.staking_fee_txn_add_dataonly_gateway_v1,
-            StakingMode::Light => config.staking_fee_txn_add_light_gateway_v1,
+            HotspotStakingMode::Full => config.staking_fee_txn_add_gateway_v1,
+            HotspotStakingMode::DataOnly => config.staking_fee_txn_add_dataonly_gateway_v1,
+            HotspotStakingMode::Light => config.staking_fee_txn_add_light_gateway_v1,
         };
         Ok(result)
     }
 }
 
+impl TxnStakingFee for BlockchainTxnAddGatewayV1 {
+    fn txn_staking_fee(&self, config: &TxnFeeConfig) -> Result<u64> {
+        self.txn_mode_staking_fee(&HotspotStakingMode::Full, config)
+    }
+}
+
 impl TxnModeStakingFee for BlockchainTxnAssertLocationV2 {
-    fn txn_mode_staking_fee(&self, mode: &StakingMode, config: &TxnFeeConfig) -> Result<u64> {
+    fn txn_mode_staking_fee(
+        &self,
+        mode: &HotspotStakingMode,
+        config: &TxnFeeConfig,
+    ) -> Result<u64> {
         let result = match mode {
-            StakingMode::Full => config.staking_fee_txn_assert_location_v1,
-            StakingMode::DataOnly => config.staking_fee_txn_assert_location_dataonly_gateway_v1,
-            StakingMode::Light => config.staking_fee_txn_assert_location_light_gateway_v1,
+            HotspotStakingMode::Full => config.staking_fee_txn_assert_location_v1,
+            HotspotStakingMode::DataOnly => {
+                config.staking_fee_txn_assert_location_dataonly_gateway_v1
+            }
+            HotspotStakingMode::Light => config.staking_fee_txn_assert_location_light_gateway_v1,
         };
         Ok(result)
+    }
+}
+
+impl TxnStakingFee for BlockchainTxnAssertLocationV2 {
+    fn txn_staking_fee(&self, config: &TxnFeeConfig) -> Result<u64> {
+        self.txn_mode_staking_fee(&HotspotStakingMode::Full, config)
     }
 }
 
@@ -230,6 +224,7 @@ impl_txn_fee!(
     buyer_signature,
     seller_signature
 );
+impl_txn_fee!(BlockchainTxnTransferHotspotV2, owner_signature);
 impl_txn_fee!(BlockchainTxnStakeValidatorV1, owner_signature);
 impl_txn_fee!(BlockchainTxnUnstakeValidatorV1, owner_signature);
 impl_txn_fee!(
@@ -279,8 +274,19 @@ mod tests {
         };
     }
 
+    macro_rules! assert_txn_mode_staking_fee {
+        ($txn: expr, $mode: expr, $cfg: expr, $expected: expr) => {
+            let actual = $txn.txn_mode_staking_fee($mode, $cfg).unwrap();
+            assert_eq!(actual, $expected);
+        };
+    }
+
     const STAKING_FEE_ASSERT_LOCATION: u64 = 40 * 100_000;
-    const STAKING_FEE_ADD_GATEWAY: u64 = 10 * 100_000;
+    const STAKING_FEE_ASSERT_LOCATION_DATAONLY_GATEWAY: u64 = 10 * 100_000;
+    const STAKING_FEE_ASSERT_LOCATION_LIGHT_GATEWAY: u64 = 20 * 100_000;
+    const STAKING_FEE_ADD_GATEWAY: u64 = 20 * 100_000;
+    const STAKING_FEE_ADD_DATAONLY_GATEWAY: u64 = 5 * 100_000;
+    const STAKING_FEE_ADD_LIGHT_GATEWAY: u64 = 10 * 100_000;
     const STAKING_FEE_OUI: u64 = 100 * 100_000;
     const STAKING_FEE_OUI_PER_ADDRESS: u64 = 100 * 100_000;
 
@@ -290,7 +296,13 @@ mod tests {
                 txn_fees: true,
                 txn_fee_multiplier: 5000,
                 staking_fee_txn_add_gateway_v1: STAKING_FEE_ADD_GATEWAY,
+                staking_fee_txn_add_dataonly_gateway_v1: STAKING_FEE_ADD_DATAONLY_GATEWAY,
+                staking_fee_txn_add_light_gateway_v1: STAKING_FEE_ADD_LIGHT_GATEWAY,
                 staking_fee_txn_assert_location_v1: STAKING_FEE_ASSERT_LOCATION,
+                staking_fee_txn_assert_location_dataonly_gateway_v1:
+                    STAKING_FEE_ASSERT_LOCATION_DATAONLY_GATEWAY,
+                staking_fee_txn_assert_location_light_gateway_v1:
+                    STAKING_FEE_ASSERT_LOCATION_LIGHT_GATEWAY,
                 staking_fee_txn_oui_v1: STAKING_FEE_OUI,
                 staking_fee_txn_oui_v1_per_address: STAKING_FEE_OUI_PER_ADDRESS,
             }
@@ -410,12 +422,35 @@ mod tests {
             payer_signature: vec![],
         };
         assert_txn_fee!(txn, &TxnFeeConfig::legacy(), 0);
-        assert_txn_staking_fee!(txn, &TxnFeeConfig::legacy(), LEGACY_STAKING_FEE);
+        assert_txn_mode_staking_fee!(
+            txn,
+            &HotspotStakingMode::Full,
+            &TxnFeeConfig::legacy(),
+            LEGACY_STAKING_FEE
+        );
 
         let fee_config = TxnFeeConfig::active();
         // Check txn fee and staking fee
         assert_txn_fee!(txn, &fee_config, 45_000);
         assert_txn_staking_fee!(txn, &fee_config, STAKING_FEE_ADD_GATEWAY);
+        assert_txn_mode_staking_fee!(
+            txn,
+            &HotspotStakingMode::Full,
+            &fee_config,
+            STAKING_FEE_ADD_GATEWAY
+        );
+        assert_txn_mode_staking_fee!(
+            txn,
+            &HotspotStakingMode::DataOnly,
+            &fee_config,
+            STAKING_FEE_ADD_DATAONLY_GATEWAY
+        );
+        assert_txn_mode_staking_fee!(
+            txn,
+            &HotspotStakingMode::Light,
+            &fee_config,
+            STAKING_FEE_ADD_LIGHT_GATEWAY
+        );
 
         // Check fee without a payer but wiht staking fee
         txn.staking_fee = txn.txn_staking_fee(&fee_config).unwrap();

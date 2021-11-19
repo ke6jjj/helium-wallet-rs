@@ -2,10 +2,13 @@ use crate::{
     keypair::{Network, PublicKey},
     mnemonic,
     result::{bail, Error, Result},
-    traits::{StakingMode, TxnFeeConfig, B64},
+    traits::{TxnFeeConfig, B64},
     wallet::Wallet,
 };
-pub use helium_api::{models::PendingTxnStatus, Client, Hnt, Hst, Usd};
+pub use helium_api::{
+    models::{transactions::PendingTxnStatus, Hnt, Hst, Usd},
+    Client,
+};
 pub use helium_proto::*;
 pub use serde_json::json;
 
@@ -126,6 +129,13 @@ fn api_url(network: Network) -> String {
         Network::TestNet => env::var("HELIUM_TESTNET_API_URL")
             .unwrap_or_else(|_| DEFAULT_TESTNET_BASE_URL.to_string()),
     }
+}
+
+pub(crate) static USER_AGENT: &str =
+    concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+
+fn new_client(base_url: String) -> Client {
+    Client::new_with_base_url(base_url, USER_AGENT)
 }
 
 fn read_txn(txn: &Option<Transaction>) -> Result<BlockchainTxn> {
