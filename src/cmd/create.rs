@@ -4,6 +4,7 @@ use crate::{
     mnemonic::SeedType,
     result::Result,
     wallet::{ShardConfig, Wallet},
+    pwhash::PwHash,
 };
 use std::path::PathBuf;
 
@@ -146,14 +147,23 @@ impl Idiot {
             network: self.network,
             key_type: self.key_type,
         };
-        let keypair = gen_keypair(tag, seed_words, self.seed.as_ref())?;
-        let format = format::Basic {
-            pwhash: PwHash::hex_default(),
-        };
-        let wallet = Wallet::encrypt(&keypair, password.as_bytes(), Format::Basic(format))?;
-        let mut writer = open_output_file(&self.output, !self.force)?;
-        wallet.write(&mut writer)?;
-        verify::print_result(&wallet, true, opts.format)
+
+        let wallet = Wallet::builder()
+            .pwhash(PwHash::hex_default())
+            .output(&self.output)
+            .password(&password)
+            .key_tag(&tag)
+            .force(self.force)
+            .seed_type(self.seed.to_owned())
+            .seed_words(seed_words)
+            .create()?;
+
+        verify::print_result(
+            &wallet,
+            &wallet.decrypt(password.as_bytes()),
+            None,
+            opts.format,
+        )
     }
 }
 
