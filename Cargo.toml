@@ -56,3 +56,12 @@ jsonrpc = "0"
 
 [dev-dependencies]
 bs58 = "0.4"
+
+[patch.crates-io]
+solana-client = { git = "ssh://git@gitea.baymoo.org/jeremy/solana.git", branch = "jsc/freebsd-quinn-1.14.12" }
+solana-sdk = { git = "ssh://git@gitea.baymoo.org/jeremy/solana.git", branch = "jsc/freebsd-quinn-1.14.12" }
+solana-program = { git = "ssh://git@gitea.baymoo.org/jeremy/solana.git", branch = "jsc/freebsd-quinn-1.14.12" }
+solana-account-decoder = { git = "ssh://git@gitea.baymoo.org/jeremy/solana.git", branch = "jsc/freebsd-quinn-1.14.12" }
+
+[patch."https://github.com/helium/helium-program-library"]
+mpl-bubblegum = { git = "ssh://git@github.com/ke6jjj/metaplex-program-library.git", branch="jsc/bash-portability" }
