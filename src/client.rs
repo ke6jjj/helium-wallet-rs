@@ -1,4 +1,5 @@
 use crate::{
+    dao::Dao,
     dao::SubDao,
     hotspot::{Hotspot, HotspotInfo},
     keypair::{Keypair, Pubkey},
@@ -326,5 +327,22 @@ impl Client {
             )
             .collect::<Result<Vec<(SubDao, HotspotInfo)>>>()?;
         Hotspot::for_address(key.clone(), Some(HashMap::from_iter(infos)))
+    }
+
+    pub fn get_current_rewards_key(
+        &self,
+        key: &helium_crypto::PublicKey,
+    ) -> Result<Pubkey> {
+        let client = self.settings.mk_anchor_client(Rc::new(Keypair::void()))?;
+        let dao = Dao::Hnt;
+        let asset_key_account_key = dao.asset_key(key)?;
+        let program = client.program(helium_entity_manager::id());
+        println!("got asset key account key {}", asset_key_account_key);
+        let result = program.account::<helium_entity_manager::KeyToAssetV0>(asset_key_account_key);
+        let asset_key = match result {
+            Ok(account_data) => account_data.asset,
+            Err(_) => panic!("no asset here"),
+        };
+        Ok(asset_key)
     }
 }

@@ -16,6 +16,44 @@ pub enum SubDao {
     Mobile,
 }
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, clap::ValueEnum, serde::Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Dao {
+    Hnt,
+}
+
+impl std::fmt::Display for Dao {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = serde_json::to_string(self).map_err(|_| std::fmt::Error)?;
+        f.write_str(&str)
+    }
+}
+
+impl Dao {
+    pub fn key(&self) -> Pubkey {
+        let mint = self.mint();
+        let (dao_key, _) =
+            Pubkey::find_program_address(&[b"dao", &mint.to_bytes()], &HNT_PROGRAM_ID);
+        dao_key
+    }
+
+    pub fn mint(&self) -> &Pubkey {
+        match self {
+            Self::Hnt => Token::Hnt.mint(),
+        }
+    }
+
+    pub fn asset_key(&self, entity_key: &helium_crypto::PublicKey) -> Result<Pubkey> {
+        let entity_decoded = bs58::decode(entity_key.to_string()).into_vec()?;
+        let hash = Sha256::digest(entity_decoded);
+        let (key, _) = Pubkey::find_program_address(
+            &[b"key_to_asset", self.key().as_ref(), &hash],
+            &HEM_PROGRAM_ID,
+        );
+       Ok(key)
+    }
+}
+
 impl std::fmt::Display for SubDao {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let str = serde_json::to_string(self).map_err(|_| std::fmt::Error)?;
