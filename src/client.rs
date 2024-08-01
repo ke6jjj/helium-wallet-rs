@@ -6,7 +6,7 @@ use crate::{
     result::{anyhow, Error, Result},
     token::{Token, TokenAmount},
 };
-use anchor_client::{solana_sdk::signer::Signer, Client as AnchorClient};
+use anchor_client::{solana_sdk::signer::Signer, Client as AnchorClient, Program};
 use http::Uri;
 use jsonrpc::Client as JsonRpcClient;
 use rayon::prelude::*;
@@ -267,7 +267,6 @@ impl Client {
             let mut params = base_params.clone();
             params["page"] = page.into();
             let page_result: PagedResult = client.call("searchAssets", &[jsonrpc::arg(params)])?;
-            println!("PAGE {page}");
             if page_result.items.is_empty() {
                 break;
             }
@@ -329,20 +328,61 @@ impl Client {
         Hotspot::for_address(key.clone(), Some(HashMap::from_iter(infos)))
     }
 
-    pub fn get_current_rewards_key(
+    pub fn get_hotspot_rewards(
         &self,
-        key: &helium_crypto::PublicKey,
-    ) -> Result<Pubkey> {
-        let client = self.settings.mk_anchor_client(Rc::new(Keypair::void()))?;
-        let dao = Dao::Hnt;
-        let asset_key_account_key = dao.asset_key(key)?;
-        let program = client.program(helium_entity_manager::id());
-        println!("got asset key account key {}", asset_key_account_key);
-        let result = program.account::<helium_entity_manager::KeyToAssetV0>(asset_key_account_key);
-        let asset_key = match result {
-            Ok(account_data) => account_data.asset,
-            Err(_) => panic!("no asset here"),
+        hotspot_key: &helium_crypto::PublicKey,
+    ) -> Result<TokenBalances> {
+        #[derive(Debug, Deserialize)]
+        struct RewardsResult {
+            currentRewards: u64,
         };
-        Ok(asset_key)
+
+        let client = self.settings.mk_anchor_client(Rc::new(Keypair::void()))?;
+        let entity_manager = client.program(helium_entity_manager::id());
+        let asset_key = get_asset_key_for_hotspot(&entity_manager, hotspot_key)?;
+        SubDao::all()
+            .iter()
+            .map(|subdao| {
+                let subdao_lazy_distributor = entity_manager.account::<lazy_distributor::LazyDistributorV0>(
+                    subdao.lazy_distributor_key()
+                )?;
+                //
+                // Ask the designated reward oracle for this sub-network for the
+                // current rewards claimable by this asset.
+                //
+                // In the future there may be multiple reward oracles for a sub-network, and
+                // in that future, some scheme will need to be developed for managing
+                // any disagreement between them. But for now, there is only one oracle and
+                // we should make this assumption clear.
+                //
+                assert_eq!(subdao_lazy_distributor.oracles.len(), 1);
+                let response = Settings::mk_rest_client()?
+                    .get(subdao_lazy_distributor.oracles[0].url)
+                    .query(&[("assetId", asset_key.to_string())])
+                    .send()?;
+                let result: RewardsResult = response.json()?;
+                result
+                });
+        let iot_lazy_distributor_key = SubDao::Iot.lazy_distributor_key();
+        let iot_lazy_distributor = program.account::<lazy_distributor::LazyDistributorV0>(iot_lazy_distributor_key)?;
+        iot_lazy_distributor.oracles
+            .par_iter()
+            .filter_map(
+
+            )
+        let balances: Balances = response.json()?;
+        let map = balances.try_into()?;
+        Ok(map)
+        Settings::mk_rest_client()
+        println!("{:?}", );
+        Ok(None)
     }
+
+}
+
+fn get_asset_key_for_hotspot(entity_manager: &Program, rewardable: &helium_crypto::PublicKey) -> Result<Pubkey> {
+    let account_key = Dao::Hnt.asset_account_key(rewardable)?;
+    entity_manager.account::<helium_entity_manager::KeyToAssetV0>(account_key)
+        .map(|account_data| account_data.asset)
+        .map_err(|err| anyhow!("rewardable doesn't exist"))
 }

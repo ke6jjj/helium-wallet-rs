@@ -1832,15 +1832,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fxhash"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c31b6d751ae2c7f11320402d34e41349dd1016f8d5d45e48c4312bc8625af50c"
-dependencies = [
- "byteorder",
-]
-
-[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2219,7 +2210,7 @@ dependencies = [
  "httpdate",
  "itoa",
  "pin-project-lite",
- "socket2",
+ "socket2 0.4.9",
  "tokio",
  "tower-service",
  "tracing",
@@ -2234,7 +2225,7 @@ checksum = "1788965e61b367cd03a62950836d5cd41560c3577d90e40e0819373194d1661c"
 dependencies = [
  "http",
  "hyper",
- "rustls",
+ "rustls 0.20.8",
  "tokio",
  "tokio-rustls",
 ]
@@ -2693,11 +2684,11 @@ dependencies = [
 [[package]]
 name = "mpl-bubblegum"
 version = "0.6.0"
-source = "git+https://github.com/helium/helium-program-library?tag=v0.1.2#0721839b58fe86481db5ddf9f4b11e0fbf2ba738"
+source = "git+ssh://git@github.com/ke6jjj/metaplex-program-library.git?branch=jsc/bash-portability#07e9a900ae9727a6fb06d21679b2f0719a6eeac3"
 dependencies = [
  "anchor-lang",
  "bytemuck",
- "mpl-token-metadata 1.8.3 (git+https://github.com/helium/helium-program-library?tag=v0.1.2)",
+ "mpl-token-metadata 1.8.3 (git+ssh://git@github.com/ke6jjj/metaplex-program-library.git?branch=jsc/bash-portability)",
  "solana-program",
  "spl-account-compression 0.1.10",
  "spl-associated-token-account",
@@ -2762,6 +2753,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "mpl-token-metadata"
+version = "1.8.3"
+source = "git+ssh://git@github.com/ke6jjj/metaplex-program-library.git?branch=jsc/bash-portability#07e9a900ae9727a6fb06d21679b2f0719a6eeac3"
+dependencies = [
+ "arrayref",
+ "borsh",
+ "mpl-token-auth-rules",
+ "mpl-token-metadata-context-derive 0.2.1 (git+ssh://git@github.com/ke6jjj/metaplex-program-library.git?branch=jsc/bash-portability)",
+ "mpl-utils 0.1.0 (git+ssh://git@github.com/ke6jjj/metaplex-program-library.git?branch=jsc/bash-portability)",
+ "num-derive",
+ "num-traits",
+ "shank",
+ "solana-program",
+ "spl-associated-token-account",
+ "spl-token",
+ "thiserror",
+]
+
+[[package]]
 name = "mpl-token-metadata-context-derive"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2775,6 +2785,15 @@ dependencies = [
 name = "mpl-token-metadata-context-derive"
 version = "0.2.1"
 source = "git+https://github.com/helium/helium-program-library?tag=v0.1.2#0721839b58fe86481db5ddf9f4b11e0fbf2ba738"
+dependencies = [
+ "quote 1.0.26",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "mpl-token-metadata-context-derive"
+version = "0.2.1"
+source = "git+ssh://git@github.com/ke6jjj/metaplex-program-library.git?branch=jsc/bash-portability#07e9a900ae9727a6fb06d21679b2f0719a6eeac3"
 dependencies = [
  "quote 1.0.26",
  "syn 1.0.109",
@@ -2796,6 +2815,17 @@ dependencies = [
 name = "mpl-utils"
 version = "0.1.0"
 source = "git+https://github.com/helium/helium-program-library?tag=v0.1.2#0721839b58fe86481db5ddf9f4b11e0fbf2ba738"
+dependencies = [
+ "arrayref",
+ "borsh",
+ "solana-program",
+ "spl-token",
+]
+
+[[package]]
+name = "mpl-utils"
+version = "0.1.0"
+source = "git+ssh://git@github.com/ke6jjj/metaplex-program-library.git?branch=jsc/bash-portability#07e9a900ae9727a6fb06d21679b2f0719a6eeac3"
 dependencies = [
  "arrayref",
  "borsh",
@@ -3414,55 +3444,50 @@ dependencies = [
 
 [[package]]
 name = "quinn"
-version = "0.8.5"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b435e71d9bfa0d8889927231970c51fb89c58fa63bffcab117c9c7a41e5ef8f"
+checksum = "21252f1c0fc131f1b69182db8f34837e8a69737b8251dff75636a9be0518c324"
 dependencies = [
  "bytes",
- "futures-channel",
- "futures-util",
- "fxhash",
+ "pin-project-lite",
  "quinn-proto",
  "quinn-udp",
- "rustls",
+ "rustc-hash",
+ "rustls 0.21.1",
  "thiserror",
  "tokio",
  "tracing",
- "webpki",
 ]
 
 [[package]]
 name = "quinn-proto"
-version = "0.8.4"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3fce546b9688f767a57530652488420d419a8b1f44a478b451c3d1ab6d992a55"
+checksum = "85af4ed6ee5a89f26a26086e9089a6643650544c025158449a3626ebf72884b3"
 dependencies = [
  "bytes",
- "fxhash",
  "rand 0.8.5",
  "ring",
- "rustls",
+ "rustc-hash",
+ "rustls 0.21.1",
  "rustls-native-certs",
- "rustls-pemfile 0.2.1",
  "slab",
  "thiserror",
  "tinyvec",
  "tracing",
- "webpki",
 ]
 
 [[package]]
 name = "quinn-udp"
-version = "0.1.4"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b07946277141531aea269befd949ed16b2c85a780ba1043244eda0969e538e54"
+checksum = "6df19e284d93757a9fb91d63672f7741b129246a669db09d1c0063071debc0c0"
 dependencies = [
- "futures-util",
+ "bytes",
  "libc",
- "quinn-proto",
- "socket2",
- "tokio",
+ "socket2 0.5.3",
  "tracing",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]
@@ -3667,8 +3692,8 @@ dependencies = [
  "once_cell",
  "percent-encoding",
  "pin-project-lite",
- "rustls",
- "rustls-pemfile 1.0.2",
+ "rustls 0.20.8",
+ "rustls-pemfile",
  "serde",
  "serde_json",
  "serde_urlencoded",
@@ -3806,24 +3831,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustls"
+version = "0.21.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c911ba11bc8433e811ce56fde130ccf32f5127cab0e0194e9c68c5a5b671791e"
+dependencies = [
+ "log",
+ "ring",
+ "rustls-webpki",
+ "sct",
+]
+
+[[package]]
 name = "rustls-native-certs"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0167bac7a9f490495f3c33013e7722b53cb087ecbe082fb0c6387c96f634ea50"
 dependencies = [
  "openssl-probe",
- "rustls-pemfile 1.0.2",
+ "rustls-pemfile",
  "schannel",
  "security-framework",
-]
-
-[[package]]
-name = "rustls-pemfile"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5eebeaeb360c87bfb72e84abdb3447159c0eaececf1bef2aecd65a8be949d1c9"
-dependencies = [
- "base64 0.13.1",
 ]
 
 [[package]]
@@ -3833,6 +3861,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d194b56d58803a43635bdc398cd17e383d6f71f9182b9a192c127ca42494a59b"
 dependencies = [
  "base64 0.21.0",
+]
+
+[[package]]
+name = "rustls-webpki"
+version = "0.100.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d6207cd5ed3d8dca7816f8f3725513a34609c0c765bf652b8c3cb4cfd87db46b"
+dependencies = [
+ "ring",
+ "untrusted",
 ]
 
 [[package]]
@@ -4234,6 +4272,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "socket2"
+version = "0.5.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2538b18701741680e0322a2302176d3253a35388e2e62f172f64f4f16605f877"
+dependencies = [
+ "libc",
+ "windows-sys 0.48.0",
+]
+
+[[package]]
 name = "sodiumoxide"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4248,8 +4296,7 @@ dependencies = [
 [[package]]
 name = "solana-account-decoder"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87b4533fe4abfd4c540ece335ad767cc91e93a5263069e2e59225be555c5c839"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "Inflector",
  "base64 0.13.1",
@@ -4273,8 +4320,7 @@ dependencies = [
 [[package]]
 name = "solana-address-lookup-table-program"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ceb299cd9df79f4c1abda6f140813f1e451a9a8810d18b84ff9dc3b81f1593c6"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "bincode",
  "bytemuck",
@@ -4294,8 +4340,7 @@ dependencies = [
 [[package]]
 name = "solana-clap-utils"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dde26cacc87164747988cf1cef8e701155188a8d51ed45a7d1be268bc49c41c2"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "chrono",
  "clap 2.34.0",
@@ -4312,8 +4357,7 @@ dependencies = [
 [[package]]
 name = "solana-cli-config"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aad3cc2faa1721149f1af05b8f10daed33c68b7523bcc82bc7f2835f2ed51746"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "dirs-next",
  "lazy_static",
@@ -4328,8 +4372,7 @@ dependencies = [
 [[package]]
 name = "solana-client"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2d59b69ee79e5b32f41b381d0e54d81e3a89e3ebe35335a586241dc000e8374"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "async-mutex",
  "async-trait",
@@ -4354,7 +4397,7 @@ dependencies = [
  "rand_chacha 0.2.2",
  "rayon",
  "reqwest",
- "rustls",
+ "rustls 0.21.1",
  "semver",
  "serde",
  "serde_derive",
@@ -4382,8 +4425,7 @@ dependencies = [
 [[package]]
 name = "solana-config-program"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b80b3dd0cd746511a4bbf9a64a8ddb2b528800437928dd90a1a16ef0e1b95be3"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "bincode",
  "chrono",
@@ -4396,8 +4438,7 @@ dependencies = [
 [[package]]
 name = "solana-faucet"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e0634db95537eeb77d78f402ea70b513b8bc12ed926b379eca53a1ba5038bbc"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "bincode",
  "byteorder",
@@ -4420,8 +4461,7 @@ dependencies = [
 [[package]]
 name = "solana-frozen-abi"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c39813ee5b249cb8ccb325d3639323eb3616e7bb9a2b1502936d7ea20530097"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "ahash 0.7.6",
  "blake3",
@@ -4454,8 +4494,7 @@ dependencies = [
 [[package]]
 name = "solana-frozen-abi-macro"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dad43ac27c4b8d7a3ce0e2cb8642a7e3b8ea5e3c29ecea38045a8518519adccf"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "proc-macro2 1.0.56",
  "quote 1.0.26",
@@ -4466,8 +4505,7 @@ dependencies = [
 [[package]]
 name = "solana-logger"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13a18f8d7490f712a4340998fca2b0d35afcdef671320a0e51f40b537363d592"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "env_logger",
  "lazy_static",
@@ -4477,8 +4515,7 @@ dependencies = [
 [[package]]
 name = "solana-measure"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3e365647d451d2b124d9705e92fcfc6e90790ae317495ff20043b6812eb8c41"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "log",
  "solana-sdk",
@@ -4487,8 +4524,7 @@ dependencies = [
 [[package]]
 name = "solana-metrics"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c4630a427e772ad5a4a64ca43f0d80848af19a1057084c9611a1e71bf027fce"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "crossbeam-channel",
  "gethostname",
@@ -4501,8 +4537,7 @@ dependencies = [
 [[package]]
 name = "solana-net-utils"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "740fb87bea9d7b9eee070244441c9079b44fa223224fb1d6bd23da1b8ec0f2b3"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "bincode",
  "clap 3.2.25",
@@ -4512,7 +4547,7 @@ dependencies = [
  "rand 0.7.3",
  "serde",
  "serde_derive",
- "socket2",
+ "socket2 0.4.9",
  "solana-logger",
  "solana-sdk",
  "solana-version",
@@ -4523,8 +4558,7 @@ dependencies = [
 [[package]]
 name = "solana-perf"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "079105b92b89a0e0b3f238f1c2c40ebffd2171d632236c20f59abac79a8aa978"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "ahash 0.7.6",
  "bincode",
@@ -4550,8 +4584,7 @@ dependencies = [
 [[package]]
 name = "solana-program"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0dafff676128fe508ab83147b6fb19534fc33f43ec14789da1f1867e9ea06887"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "base64 0.13.1",
  "bincode",
@@ -4599,8 +4632,7 @@ dependencies = [
 [[package]]
 name = "solana-program-runtime"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "17865dc487a5f38e8f64a8ff3ff14e92a8a71be87ca6ee958ad07f5d1fa4cdf4"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "base64 0.13.1",
  "bincode",
@@ -4626,8 +4658,7 @@ dependencies = [
 [[package]]
 name = "solana-rayon-threadlimit"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f82e4deecbe820847c88f091f9b721fad46276575fcfdf177bbc2743731dc25b"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "lazy_static",
  "num_cpus",
@@ -4636,8 +4667,7 @@ dependencies = [
 [[package]]
 name = "solana-remote-wallet"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09863751b4d9ca46297f0662293561c4a3846abc9cab7b691b091ea9ae3c9340"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "console 0.15.5",
  "dialoguer 0.10.4",
@@ -4655,8 +4685,7 @@ dependencies = [
 [[package]]
 name = "solana-sdk"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c702cc57432bc16eab54ad7b5668c2a3cdc72b0f820175972b4857e26ac4f49"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "assert_matches",
  "base64 0.13.1",
@@ -4706,8 +4735,7 @@ dependencies = [
 [[package]]
 name = "solana-sdk-macro"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f89a14a8f1e7708fe19ee3140125e9d8279945ead74cb09e65c94dd5cf0640c3"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "bs58 0.4.0",
  "proc-macro2 1.0.56",
@@ -4719,8 +4747,7 @@ dependencies = [
 [[package]]
 name = "solana-streamer"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7116f13d20003e99f3f8fb5b1b20cb638a8c797ec8fe40dc4840a284bab1e53c"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "crossbeam-channel",
  "futures-util",
@@ -4736,7 +4763,7 @@ dependencies = [
  "quinn",
  "rand 0.7.3",
  "rcgen",
- "rustls",
+ "rustls 0.21.1",
  "solana-metrics",
  "solana-perf",
  "solana-sdk",
@@ -4748,8 +4775,7 @@ dependencies = [
 [[package]]
 name = "solana-transaction-status"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff48b27221d728dd907400711aa42d07d5fe78c6bf9e35f850c78e89ee800e97"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "Inflector",
  "base64 0.13.1",
@@ -4777,8 +4803,7 @@ dependencies = [
 [[package]]
 name = "solana-version"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18f9c97e7d62d3e0ef04426cd7731689f5c675e0b4540fa5dca172ab261b57a3"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "log",
  "rustc_version",
@@ -4793,8 +4818,7 @@ dependencies = [
 [[package]]
 name = "solana-vote-program"
 version = "1.14.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "694e6ecff6764540b555224308fa3cbccb59135e6029761febdba49d8197faaf"
+source = "git+ssh://git@gitea.baymoo.org/jeremy/solana.git?branch=jsc/freebsd-quinn-1.14.12#59e04dd13003a8572b56cdfd55ba10820656876c"
 dependencies = [
  "bincode",
  "log",
@@ -5286,9 +5310,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.28.0"
+version = "1.28.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c3c786bf8134e5a3a166db9b29ab8f48134739014a3eca7bc6bfa95d673b136f"
+checksum = "94d7b1cfd2aa4011f2de74c2c4c63665e27a71006b0a192dcd2710272e73dfa2"
 dependencies = [
  "autocfg",
  "bytes",
@@ -5298,7 +5322,7 @@ dependencies = [
  "parking_lot",
  "pin-project-lite",
  "signal-hook-registry",
- "socket2",
+ "socket2 0.4.9",
  "tokio-macros",
  "windows-sys 0.48.0",
 ]
@@ -5320,7 +5344,7 @@ version = "0.23.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c43ee83903113e03984cb9e5cebe6c04a5116269e900e3ddba8f068a62adda59"
 dependencies = [
- "rustls",
+ "rustls 0.20.8",
  "tokio",
  "webpki",
 ]
@@ -5344,7 +5368,7 @@ checksum = "f714dd15bead90401d77e04243611caec13726c2408afd5b31901dfcdcb3b181"
 dependencies = [
  "futures-util",
  "log",
- "rustls",
+ "rustls 0.20.8",
  "tokio",
  "tokio-rustls",
  "tungstenite",
@@ -5405,6 +5429,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ce8c33a8d48bd45d624a6e523445fd21ec13d3653cd51f681abf67418f54eb8"
 dependencies = [
  "cfg-if",
+ "log",
  "pin-project-lite",
  "tracing-attributes",
  "tracing-core",
@@ -5460,7 +5485,7 @@ dependencies = [
  "httparse",
  "log",
  "rand 0.8.5",
- "rustls",
+ "rustls 0.20.8",
  "sha-1",
  "thiserror",
  "url",

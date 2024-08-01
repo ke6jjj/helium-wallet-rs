@@ -43,7 +43,7 @@ impl Dao {
         }
     }
 
-    pub fn asset_key(&self, entity_key: &helium_crypto::PublicKey) -> Result<Pubkey> {
+    pub fn asset_account_key(&self, entity_key: &helium_crypto::PublicKey) -> Result<Pubkey> {
         let entity_decoded = bs58::decode(entity_key.to_string()).into_vec()?;
         let hash = Sha256::digest(entity_decoded);
         let (key, _) = Pubkey::find_program_address(

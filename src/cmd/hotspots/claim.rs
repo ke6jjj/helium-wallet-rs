@@ -11,11 +11,11 @@ impl Cmd {
     pub fn run(&self, opts: Opts) -> Result {
         let client = new_client(&opts.url)?;
 
-        let account = client.get_current_rewards_key(
+        let account = client.get_current_rewards(
             &self.ecc_key
         )?;
         let json = json!({
-            "asset": account,
+            "asset": "yes",
         });
         print_json(&json)
     }
